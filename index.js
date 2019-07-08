@@ -73,6 +73,8 @@ function getDataWithExtension (name) {
   if (!data.xprv) {
     throw new Error('Invalid private key.')
   }
+
+  // This removes the human readable parts when the data is required
   for (var mpath in data) {
     if (mpath[0] !== 'x') {
       var msplit = mpath.split('/')
@@ -252,6 +254,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
 
   const childPath = bareParts.join('/')
   const childKey = masterPrivateKey.deriveChild('m/' + childPath)
+  const humanChildPath = parts.join('/')
 
   const fundingKey = getFundingKey()
 
@@ -281,7 +284,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
 
   const tx = await addNode(fundingKey, parentKey, childKey, script.toString())
 
-  data[childPath] = tx.toString()
+  data[humanChildPath] = tx.toString()
   dumpData(name, data)
 
   console.log(tx.toString())
