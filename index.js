@@ -214,6 +214,10 @@ async function addNode (fundingKey, parentKey, childKey, script) {
 
   // Starting here - I'm going to add some code that will allow you to add human readable names to derivation paths because at the moment a list of zeros is hard to keep a track of. It's going to have to be a case of inserting a special character right after the normal path, and stripping it out before doing the actual derivation.
 
+  function stripHrdp (value, index, array) {
+    return value.substring(0, value.indexOf(':'))
+  }
+
   const p = options.path
 
   const parts = p.split('/')
@@ -224,17 +228,19 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   let parentKey = null
   let parentPath = null
 
+  var bareParts = parts.map(stripHrdp)
+
   const masterPrivateKey = bsv.HDPrivateKey(data.xprv)
-  if (parts.length === 1) {
-    if (parts[0] !== '0') {
+  if (bareParts.length === 1) {
+    if (bareParts[0] !== '0') {
       throw new Error('Only one root not is allowed.')
     }
   } else {
-    parentPath = parts.slice(0, -1).join('/')
+    parentPath = bareParts.slice(0, -1).join('/')
     parentKey = masterPrivateKey.deriveChild('m/' + parentPath)
   }
 
-  const childPath = parts.join('/')
+  const childPath = bareParts.join('/')
   const childKey = masterPrivateKey.deriveChild('m/' + childPath)
 
   const fundingKey = getFundingKey()
