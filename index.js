@@ -73,6 +73,8 @@ function getDataWithExtension (name) {
   return data
 }
 
+// Will need to update this data dumping function to ensure we keep the human readable name somewhere, and maybe make a new function to list all existing keys.
+
 function dumpData (name, data) {
   const homeDir = process.env.HOME
 
