@@ -53,11 +53,6 @@ function stripHrdp (value, index, array) {
   return (value.indexOf(':') !== -1) ? value.substring(0, value.indexOf(':')) : value
 }
 
-// This function will dump a visual guide of your structure.
-function listDerivationPaths() {
-  return 0
-}
-
 function getDataWithExtension (name) {
   const homeDir = process.env.HOME
 
@@ -207,14 +202,19 @@ async function addNode (fundingKey, parentKey, childKey, script) {
 
   const options = commandLineArgs(optionDefinitions)
 
-  if (options.human) {
-    var data = getData(options.human)
-    console.log(data)
-  }
-
-  if (!options.path) {
-    console.log('You must specify a path for the metanet node')
+  if (!options.path && !options.human) {
+    console.log('You must specify a path for the metanet node, or the name of a local root node to print its structure.')
     process.exit(1)
+  } else if (!options.path) {
+    const checkfile = path.join(process.env.HOME, '.meta-writer', `${options.human}.dat`)
+    if (fs.existsSync(checkfile)) {
+      console.log(options.human)
+      var humandata = getData(options.human)
+      console.log(humandata)
+    } else {
+      console.log('Root node doesn\'t exist with that name.')
+    }
+    process.exit()
   }
 
   if (!options.file && !options.src) {
