@@ -210,6 +210,8 @@ async function addNode (fundingKey, parentKey, childKey, script) {
     process.exit(1)
   }
 
+  // Starting here - I'm going to add some code that will allow you to add human readable names to derivation paths because at the moment a list of zeros is hard to keep a track of. It's going to have to be a case of inserting a special character right after the normal path, and stripping it out before doing the actual derivation.
+
   const p = options.path
 
   const parts = p.split('/')
