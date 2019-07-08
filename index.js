@@ -48,6 +48,8 @@ function getFundingKey () {
   return null
 }
 
+// This is the function which strips out each part of the derivation path anything after ':' so that you can name you paths without it affecting the operation of the rest of the code.
+
 function stripHrdp (value, index, array) {
   return (value.indexOf(':') !== -1) ? value.substring(0, value.indexOf(':')) : value
 }
@@ -76,8 +78,6 @@ function getDataWithExtension (name) {
 
   return data
 }
-
-// Will need to update this data dumping function to ensure we keep the human readable name somewhere, and maybe make a new function to list all existing keys.
 
 function dumpData (name, data) {
   const homeDir = process.env.HOME
@@ -216,8 +216,6 @@ async function addNode (fundingKey, parentKey, childKey, script) {
     process.exit(1)
   }
 
-  // Starting here - I'm going to add some code that will allow you to add human readable names to derivation paths because at the moment a list of zeros is hard to keep a track of. It's going to have to be a case of inserting a special character right after the normal path, and stripping it out before doing the actual derivation.
-
   const p = options.path
 
   const parts = p.split('/')
@@ -227,9 +225,9 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   const data = getData(name)
   let parentKey = null
   let parentPath = null
-  let humanParentPath = null
+  let humanParentPath = null // This is the key for where we will grab the data from in the dat file
 
-  var bareParts = parts.map(stripHrdp)
+  var bareParts = parts.map(stripHrdp) // Strip out human readable part of the derivation path so as not to affect the function of the key derivation.
 
   const masterPrivateKey = bsv.HDPrivateKey(data.xprv)
   if (bareParts.length === 1) {
@@ -239,7 +237,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   } else {
     parentPath = bareParts.slice(0, -1).join('/')
     parentKey = masterPrivateKey.deriveChild('m/' + parentPath)
-    humanParentPath = parts.slice(0, -1).join('/')
+    humanParentPath = parts.slice(0, -1).join('/') // update data key based on human readable file
   }
 
   const childPath = bareParts.join('/')
@@ -252,7 +250,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   oprParts.push('OP_RETURN')
   oprParts.push(Buffer.from('meta').toString('hex'))
   oprParts.push(Buffer.from(childKey.publicKey.toAddress().toString()).toString('hex'))
-  const txid = (parentKey === null ? 'NULL' : data[humanParentPath])
+  const txid = (parentKey === null ? 'NULL' : data[humanParentPath]) // grab txid from human readable dat
   oprParts.push(Buffer.from(txid).toString('hex'))
 
   if (options.file) {
