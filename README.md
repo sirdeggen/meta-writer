@@ -75,7 +75,7 @@ Please note that the xprv in this file is the master private key of your Metanet
 
 ## Human Readable Derivation Paths  
 
-In order to be able to remembver what you're doing, it is possible to add reminder names after the derivation paths you create. For example:
+In order to be able to remember what you're doing, it is possible to add reminder names after the derivation paths you create. This does not change the actual derivation mapths - just how they are stored and displayed. For example:
 
 `meta-writer --path /myalbum/0:familyphotos/1:mum/0 --file ./mum.png --type "image/png"`
 
