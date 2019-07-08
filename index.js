@@ -49,9 +49,13 @@ function getFundingKey () {
 }
 
 // This is the function which strips out each part of the derivation path anything after ':' so that you can name you paths without it affecting the operation of the rest of the code.
-
 function stripHrdp (value, index, array) {
   return (value.indexOf(':') !== -1) ? value.substring(0, value.indexOf(':')) : value
+}
+
+// This function will dump a visual guide of your structure.
+function listDerivationPaths() {
+  return 0
 }
 
 function getDataWithExtension (name) {
@@ -195,11 +199,18 @@ async function addNode (fundingKey, parentKey, childKey, script) {
     { name: 'file', alias: 'f', type: String },
     { name: 'path', alias: 'p', type: String },
     { name: 'type', alias: 't', type: String },
+    { name: 'human', alias: 'h', type: String },
     { name: 'src', type: String, defaultOption: true }
   ]
 
   const commandLineArgs = require('command-line-args')
+
   const options = commandLineArgs(optionDefinitions)
+
+  if (options.human) {
+    var data = getData(options.human)
+    console.log(data)
+  }
 
   if (!options.path) {
     console.log('You must specify a path for the metanet node')
