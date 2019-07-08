@@ -74,18 +74,6 @@ function getDataWithExtension (name) {
     throw new Error('Invalid private key.')
   }
 
-  // This removes the human readable parts when the data is required
-  for (var mpath in data) {
-    if (mpath[0] !== 'x') {
-      var msplit = mpath.split('/')
-      var mParts = msplit.map(stripHrdp)
-      var deriv = mParts.join('/')
-      if (deriv !== mpath) {
-        data[deriv] = data[mpath]
-        delete data[mpath]
-      }
-    }
-  }
   return data
 }
 
@@ -239,6 +227,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   const data = getData(name)
   let parentKey = null
   let parentPath = null
+  let humanParentPath = null
 
   var bareParts = parts.map(stripHrdp)
 
@@ -250,6 +239,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   } else {
     parentPath = bareParts.slice(0, -1).join('/')
     parentKey = masterPrivateKey.deriveChild('m/' + parentPath)
+    humanParentPath = parts.slice(0, -1).join('/')
   }
 
   const childPath = bareParts.join('/')
@@ -262,7 +252,7 @@ async function addNode (fundingKey, parentKey, childKey, script) {
   oprParts.push('OP_RETURN')
   oprParts.push(Buffer.from('meta').toString('hex'))
   oprParts.push(Buffer.from(childKey.publicKey.toAddress().toString()).toString('hex'))
-  const txid = (parentKey === null ? 'NULL' : data[parentPath])
+  const txid = (parentKey === null ? 'NULL' : data[humanParentPath])
   oprParts.push(Buffer.from(txid).toString('hex'))
 
   if (options.file) {
